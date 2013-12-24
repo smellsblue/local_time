@@ -173,21 +173,25 @@ document.addEventListener "DOMContentLoaded", ->
   domLoaded = true
   textProperty = if "textContent" of document.body then "textContent" else "innerText"
 
-  process "time[data-local]:not([data-localized])", (element) ->
-    datetime = element.getAttribute "datetime"
-    format   = element.getAttribute "data-format"
-    local    = element.getAttribute "data-local"
+  processFor = (tags, targetType, targetProperty) ->
+    process "#{tags}[data-#{targetType}]:not([data-localized])", (element) ->
+      datetime = element.getAttribute "datetime"
+      format   = element.getAttribute "data-format"
+      local    = element.getAttribute "data-#{targetType}"
 
-    time = new Date Date.parse datetime
-    return if isNaN time
+      time = new Date Date.parse datetime
+      return if isNaN time
 
-    element[textProperty] =
-      switch local
-        when "time"
-          element.setAttribute "data-localized", true
-          strftime time, format
-        when "time-ago"
-          RelativeTimeAgo.generate time
+      element[targetProperty] =
+        switch local
+          when "time"
+            element.setAttribute "data-localized", true
+            strftime time, format
+          when "time-ago"
+            RelativeTimeAgo.generate time
+
+  processFor "*", "local-title", "title"
+  processFor "time", "local", textProperty
 
   setInterval ->
     event = document.createEvent "Events"
