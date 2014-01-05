@@ -194,3 +194,8 @@ document.addEventListener "DOMContentLoaded", ->
     event.initEvent "time:elapse", true, true
     document.dispatchEvent event
   , 60 * 1000
+
+window.LocalTime ||=
+    strftime: strftime
+    relativeTimeAgo: (time) ->
+        RelativeTimeAgo.generate time
